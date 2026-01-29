@@ -1,0 +1,45 @@
+services:
+  mongo:
+    image: mongo:6
+    container_name: restaurant-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build: ./backend
+    container_name: restaurant-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URL=mongodb://mongo:27017/restaurant-db
+      - PORT=8000
+      - ADMIN_LOGIN=admin
+      - ADMIN_PASSWORD=admin
+      - PRIVATE_KEY=h2wKXGOElhTYBvSLRXPVYhMlf6dp7C
+    depends_on:
+      - mongo
+    volumes:
+      - ./backend:/app
+    command: npm start
+
+  frontend:
+    build: ./frontend
+    container_name: restaurant-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+    command: npm start
+
+volumes:
+  mongo-data:
