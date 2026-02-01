@@ -1,0 +1,52 @@
+services:
+  mongo:
+    image: mongo:6
+    container_name: restaurant-mongo-dev
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    image: restaurant-backend-dev
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: restaurant-backend-dev
+    ports:
+      - "8000:8000"
+    environment:
+      MONGODB_URL: mongodb://mongo:27017/restaurant-db
+      PORT: 8000
+      ADMIN_LOGIN: admin
+      ADMIN_PASSWORD: admin
+      PRIVATE_KEY: dev-secret-key
+      NODE_ENV: development
+    depends_on:
+      - mongo
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: npm run dev
+
+  frontend:
+    image: restaurant-frontend-dev
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: restaurant-frontend-dev
+    ports:
+      - "3000:3000"
+    environment:
+      API_URL: http://backend:8000
+      NODE_ENV: development
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev
+
+volumes:
+  mongo-data:

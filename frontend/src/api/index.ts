@@ -3,23 +3,22 @@ import { TCategory, TCreateOrderRequest, TProduct, TTable, TUser, TUserLoginRequ
 
 // ----- Axios instance for client-side -----
 const clientRequest: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api",
-  withCredentials: true, // ensures cookies are sent in browser
+  baseURL: "/api",
+  withCredentials: true,
 });
 
 // ----- Axios instance for SSR / Server-side -----
 export const serverRequest = (cookie?: string): AxiosInstance =>
   axios.create({
-    baseURL: process.env.API_URL || "http://localhost:8000/api",
-    headers: cookie ? { cookie } : undefined, // forward cookie from incoming request
+    baseURL: `${process.env.API_URL}/api` || "http://localhost:8000/api",
+    headers: cookie ? { cookie } : undefined,
   });
 
 // ----- API functions -----
-
 // Fetch all users
 export const fetchUsers = async (): Promise<TUser[]> => {
   try {
-    const res = await clientRequest.get<TUser[]>("/users");
+    const res = await serverRequest().get<TUser[]>("/users");
     return res.data;
   } catch (err) {
     return [];

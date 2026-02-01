@@ -19,27 +19,20 @@ services:
       - PORT=8000
       - ADMIN_LOGIN=admin
       - ADMIN_PASSWORD=admin
-      - PRIVATE_KEY=h2wKXGOElhTYBvSLRXPVYhMlf6dp7C
+      - PRIVATE_KEY=dev-secret-keyb
+      - PORT=8000
     depends_on:
       - mongo
-    volumes:
-      - ./backend:/app
-    command: npm start
 
   frontend:
     build: ./frontend
     container_name: restaurant-frontend
-    restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
-      - API_URL=http://localhost:8000
+      - API_URL=http://backend:8000 
     depends_on:
       - backend
-    volumes:
-      - ./frontend:/app
-    command: npm start
 
 volumes:
-  mongo-data:
+  mongo-data: {}

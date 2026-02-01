@@ -29,7 +29,7 @@ export default async function RootLayout({
   const cookieStore = await cookies()
   const users = await fetchUsers()
   const user = await fetchMeSSR(cookieStore.toString());
-
+  console.log(users)
   return (
     <html lang="en">
       <body
